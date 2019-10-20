@@ -55,8 +55,8 @@ int  ldr_sensor;
 bool switch_mode_a;
 bool switch_mode_b;
 
-int addr_int_hpa_min = 0;
-int addr_int_hpa_max;
+int addr_long_hpa_min = 0;
+int addr_long_hpa_max;
 
 
 void setup() {
@@ -68,7 +68,7 @@ void setup() {
   pinMode(PIN_SWITCH_MODE_B, INPUT_PULLUP);
 
   // Calculate memory addresses
-  addr_int_hpa_max = addr_int_hpa_min + sizeof(long);
+  addr_long_hpa_max = addr_long_hpa_min + sizeof(long);
   
   if (!bmp.begin()) {
     #ifdef DEBUG
@@ -80,8 +80,8 @@ void setup() {
 
   iMedian = MEDIAN_COUNT / 2;
   
-  EEPROM.get(addr_int_hpa_min, pa_min);
-  EEPROM.get(addr_int_hpa_max, pa_max);
+  EEPROM.get(addr_long_hpa_min, pa_min);
+  EEPROM.get(addr_long_hpa_max, pa_max);
 
   // Init pressure measurements
   pa_current = bmp.readPressure();
@@ -95,8 +95,8 @@ void setup() {
     pa_min = pa_current - STARTUP_RANGE;
     pa_center = pa_current;
     
-    EEPROM.put(addr_int_hpa_min, pa_min);
-    EEPROM.put(addr_int_hpa_max, pa_max);
+    EEPROM.put(addr_long_hpa_min, pa_min);
+    EEPROM.put(addr_long_hpa_max, pa_max);
   } else {
     #ifdef DEBUG
       Serial.println("Loaded min/max values from EEPROM");
@@ -152,12 +152,12 @@ void measureAndCalculate() {
   // Calculate minimum, maximum and center values
   if(pa_current > pa_max) {
     pa_max = pa_current;
-    EEPROM.put(addr_int_hpa_max, pa_max);
+    EEPROM.put(addr_long_hpa_max, pa_max);
   }
   
   if(pa_current < pa_min) {
     pa_min = pa_current;
-    EEPROM.put(addr_int_hpa_min, pa_min);
+    EEPROM.put(addr_long_hpa_min, pa_min);
   }
   
   calculateCenter();
